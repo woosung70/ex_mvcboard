@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.doubles.mvcboard.mappers.reply.ReplyMapper">
+
+    <select id="list" resultMap="ReplyResultMap">
+        SELECT
+            reply_no
+            , article_no
+            , reply_text
+            , reply_writer
+            , reg_date
+            , update_date
+            , user_img
+        FROM tbl_reply
+            , tbl_user
+        WHERE user_id = reply_writer and article_no = #{articleNo}
+        ORDER BY reply_no DESC
+    </select>
+
+    <insert id="create">
+        INSERT INTO tbl_reply (
+            article_no
+            , reply_text
+            , reply_writer
+        ) VALUES (
+            #{articleNo}
+            , #{replyText}
+            , #{replyWriter}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE tbl_reply
+        SET
+            reply_text = #{replyText}
+            , update_date = NOW()
+        WHERE reply_no = #{replyNo}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM tbl_reply
+        WHERE reply_no = #{replyNo}
+    </delete>
+
+    <select id="listPaging" resultMap="ReplyResultMap">
+        SELECT
+            reply_no
+            , article_no
+            , reply_text
+            , reply_writer
+            , reg_date
+            , update_date
+            , user_img
+        FROM tbl_reply
+        INNER JOIN tbl_user ON user_id = reply_writer
+        WHERE article_no = #{articleNo}
+        ORDER BY reply_no DESC
+        LIMIT #{criteria.pageStart}, #{criteria.perPageNum}
+    </select>
+
+    <select id="countReplies" resultType="int">
+        SELECT
+            COUNT(article_no)
+        FROM tbl_reply
+        WHERE article_no = #{articleNo}
+    </select>
+
+    <select id="getArticleNo" resultType="int">
+        SELECT
+            article_no
+        FROM tbl_reply
+        WHERE reply_no = #{replyNo}
+    </select>
+
+    <resultMap id="ReplyResultMap" type="ReplyVO">
+        <id property="replyNo" column="reply_no"/>
+        <result property="articleNo" column="article_no"/>
+        <result property="replyText" column="reply_text"/>
+        <result property="replyWriter" column="reply_writer"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="updateDate" column="update_date"/>
+        <association property="userVO" resultMap="userVOResultMap"/>
+    </resultMap>
+
+    <resultMap id="ArticleResultMap" type="ArticleVO">
+        <id property="articleNo" column="article_no"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="writer" column="writer"/>
+        <result property="regDate" column="regdate"/>
+        <result property="viewCnt" column="viewcnt"/>
+    </resultMap>
+
+    <resultMap id="userVOResultMap" type="UserVO">
+        <id property="userId" column="user_id"/>
+        <result property="userPw" column="user_pw"/>
+        <result property="userName" column="user_name"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="userJoinDate" column="user_join_date"/>
+        <result property="userLoginDate" column="user_login_date"/>
+        <result property="userSignature" column="user_signature"/>
+        <result property="userImg" column="user_img"/>
+        <result property="userPoint" column="user_point"/>
+    </resultMap>
+
+</mapper>

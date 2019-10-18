@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.doubles.mvcboard.mappers.user.UserMapper">
+
+    <resultMap id="userVOResultMap" type="UserVO">
+        <id property="userId" column="user_id"/>
+        <result property="userPw" column="user_pw"/>
+        <result property="userName" column="user_name"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="userJoinDate" column="user_join_date"/>
+        <result property="userLoginDate" column="user_login_date"/>
+        <result property="userSignature" column="user_signature"/>
+        <result property="userImg" column="user_img"/>
+        <result property="userPoint" column="user_point"/>
+    </resultMap>
+
+    <select id="login" resultMap="userVOResultMap">
+        SELECT
+          *
+        FROM tbl_user
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="keepLogin">
+        UPDATE tbl_user
+        SET session_key = #{sessionId}
+            , session_limit = #{sessionLimit}
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="checkUserWithSessionKey" resultMap="userVOResultMap">
+        SELECT
+            *
+        FROM tbl_user
+        WHERE session_key = #{value}
+    </select>
+
+    <insert id="register">
+        INSERT INTO tbl_user (
+            user_id
+            , user_pw
+            , user_name
+            , user_email
+        ) VALUES (
+            #{userId}
+            , #{userPw}
+            , #{userName}
+            , #{userEmail}
+        )
+    </insert>
+
+    <select id="getUserPw" resultType="string">
+        SELECT user_pw
+        FROM tbl_user
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="userInfoUpdate">
+        UPDATE tbl_user
+        SET
+            user_name = #{userName}
+            , user_email = #{userEmail}
+            , user_signature = #{userSignature}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="userPwUpdate">
+        UPDATE tbl_user
+        SET
+            user_pw = #{newUserPw}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="userImgUpdate">
+        UPDATE tbl_user
+        SET
+            user_img = #{userImg}
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>
